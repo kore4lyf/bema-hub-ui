@@ -1,0 +1,145 @@
+"use client";
+
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Loader2, Mail, Lock } from "lucide-react";
+import { toast } from "sonner";
+import { useDispatch } from "react-redux";
+import { useSigninMutation } from "@/lib/api/authApi";
+import { setCredentials } from "@/lib/features/auth/authSlice";
+import { GoogleLoginButton, FacebookLoginButton, TwitterLoginButton } from "@/components/auth/SocialLogin";
+import GuestOnlyRoute from "@/components/auth/GuestOnlyRoute";
+import { Card } from "@/components/ui/card";
+
+export default function SignInPage() {
+  return (
+    <GuestOnlyRoute>
+      <SignInContent />
+    </GuestOnlyRoute>
+  );
+}
+
+function SignInContent() {
+  const router = useRouter();
+  const dispatch = useDispatch();
+  const [signIn, { isLoading }] = useSigninMutation();
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const result = await signIn({
+        username: formData.email,
+        password: formData.password,
+      }).unwrap();
+
+      console.log('Signin result:', result);
+      console.log('Email verified status:', result.bema_email_verified);
+
+      dispatch(setCredentials({
+        authData: result
+      }));
+
+      toast.success("Signed in successfully!");
+      
+      // Route based on email verification status
+      if (result.bema_email_verified === false) {
+        console.log('Email not verified, redirecting to verify page');
+        router.push("/signup/verify");
+      } else {
+        console.log('Email verified, redirecting to dashboard');
+        router.push("/dashboard");
+      }
+    } catch (err: any) {
+      toast.error(err.data?.message || "Sign in failed");
+    }
+  };
+
+  return (
+    <div className="grid place-content-center px-4 py-12 [&::-webkit-scrollbar]:w-0 overflow-y-scroll">
+      <Card className="p-6">
+        <div className="w-full max-w-md space-y-8">
+          <div>
+            <h1 className="text-3xl font-bold">Welcome back</h1>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Sign in to your account to continue
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="Enter your email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  required
+                  className="pl-10"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password">Password</Label>
+                <Link href="/reset-password" className="text-xs text-primary hover:underline">
+                  Forgot password?
+                </Link>
+              </div>
+              <div className="relative">
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="Enter your password"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  required
+                  className="pl-10" />
+              </div>
+            </div>
+
+            <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+              {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Sign In"}
+            </Button>
+          </form>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <Separator />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="px-2 text-muted-foreground">Or continue with</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3">
+            <GoogleLoginButton />
+            <FacebookLoginButton />
+            <TwitterLoginButton />
+          </div>
+
+          <p className="text-center text-sm text-muted-foreground">
+            Don't have an account?{" "}
+            <Link href="/signup" className="font-semibold text-primary hover:underline">
+              Sign up
+            </Link>
+          </p>
+        </div>
+      </Card>
+    </div>
+  );
+}
