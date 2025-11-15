@@ -1,4 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { Mutex } from 'async-mutex'
+import { toast } from 'sonner'
 import type {
   SignupRequest,
   VerifyOtpRequest,
@@ -20,22 +22,88 @@ import type {
   ResetPasswordRequestResponse,
   ResetPasswordVerifyResponse,
   ResetPasswordResponse,
-  ProfileResponse
+  ProfileResponse,
+  RefreshTokenRequest,
+  RefreshTokenResponse,
+  SessionResponse,
+  RevokeSessionRequest,
+   RevokeAllSessionsResponse
 } from './types'
+import type { RootState } from '@/lib/store'
+import { logout } from '@/lib/features/auth/authSlice'
+
+// Create a mutex to prevent multiple simultaneous refresh requests
+const mutex = new Mutex()
+
+// Enhanced baseQuery with automatic token refresh
+const baseQuery = fetchBaseQuery({
+  baseUrl: `${process.env.NEXT_PUBLIC_API_URL}/wp-json/bmh/v1/`,
+  prepareHeaders: (headers, { getState }) => {
+    const token = (getState() as RootState).auth.accessToken
+    if (token) {
+      headers.set('authorization', `Bearer ${token}`)
+    }
+    return headers
+  },
+})
+
+const baseQueryWithReauth: ReturnType<typeof fetchBaseQuery> = async (args, api, extraOptions) => {
+  // Wait for any existing refresh to complete
+  await mutex.waitForUnlock()
+
+  let result = await baseQuery(args, api, extraOptions)
+
+  // If we get a 401, try to refresh the token
+  if (result.error && result.error.status === 401) {
+    // Check if another request is already refreshing the token
+    if (!mutex.isLocked()) {
+      const release = await mutex.acquire()
+      try {
+        const refreshToken = (api.getState() as RootState).auth.refreshToken
+        
+        if (refreshToken) {
+          const refreshResult = await baseQuery(
+            {
+              url: 'auth/refresh',
+              method: 'POST',
+              body: { refresh_token: refreshToken }
+            },
+            api,
+            extraOptions
+          )
+
+          if (refreshResult.data && (refreshResult.data as any).success) {
+            api.dispatch({
+              type: 'auth/updateSessionTokens',
+              payload: { accessToken: (refreshResult.data as any).access_token }
+            })
+            result = await baseQuery(args, api, extraOptions)
+          } else {
+            toast.error('Session expired. Please sign in again.')
+            api.dispatch(logout())
+          }
+        } else {
+          toast.error('Session expired. Please sign in again.')
+          api.dispatch(logout())
+        }
+      } finally {
+        release()
+      }
+    } else {
+      // Wait for the lock to be released (refresh to complete)
+      await mutex.waitForUnlock()
+      // Retry the original request
+      result = await baseQuery(args, api, extraOptions)
+    }
+  }
+  
+  return result
+}
 
 export const authApi = createApi({
   reducerPath: 'authApi',
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${process.env.NEXT_PUBLIC_API_URL}/wp-json/bema-hub/v1/`,
-    prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as any).auth.token
-      if (token) {
-        headers.set('authorization', `Bearer ${token}`)
-      }
-      return headers
-    },
-  }),
-  tagTypes: ['User', 'Profile'],
+  baseQuery: baseQueryWithReauth,
+  tagTypes: ['User', 'Profile', 'Sessions'],
   endpoints: (builder) => ({
     signup: builder.mutation<SignupResponse, SignupRequest>({
       query: (data) => ({ url: 'auth/signup', method: 'POST', body: data }),
@@ -65,7 +133,27 @@ export const authApi = createApi({
       query: (data) => ({ url: 'auth/verify-password-reset-otp', method: 'POST', body: data }),
     }),
     resetPassword: builder.mutation<ResetPasswordResponse, ResetPasswordFinalRequest>({
-      query: (data) => ({ url: 'auth/reset-password-request', method: 'POST', body: data }),
+      query: (data) => ({ url: 'auth/reset-password', method: 'POST', body: data }),
+    }),
+    refreshToken: builder.mutation<RefreshTokenResponse, RefreshTokenRequest>({
+      query: (data) => ({ url: 'auth/refresh', method: 'POST', body: data }),
+    }),
+    getSessions: builder.query<SessionResponse[], void>({
+      query: () => 'sessions',
+      providesTags: ['Sessions'],
+    }),
+    revokeSession: builder.mutation<void, RevokeSessionRequest>({
+      query: (data) => ({
+        url: `sessions/${data.sessionId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Sessions'],
+    }),
+    revokeAllSessions: builder.mutation<RevokeAllSessionsResponse, void>({
+      query: () => ({
+        url: 'sessions',
+        method: 'DELETE',
+      }),
     }),
     getProfile: builder.query<ProfileResponse, void>({
       query: () => '/profile',
@@ -89,6 +177,10 @@ export const {
   useResetPasswordRequestMutation,
   useVerifyPasswordResetOtpMutation,
   useResetPasswordMutation,
+  useRefreshTokenMutation,
+  useGetSessionsQuery,
+  useRevokeSessionMutation,
+  useRevokeAllSessionsMutation,
   useGetProfileQuery,
   useUpdateProfileMutation,
 } = authApi

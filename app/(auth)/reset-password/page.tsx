@@ -7,15 +7,12 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { Loader2, Mail } from "lucide-react";
 import { toast } from "sonner";
-import GuestOnlyRoute from "@/components/auth/GuestOnlyRoute";
 import { useResetPasswordRequestMutation } from "@/lib/api/authApi";
 import { Card } from "@/components/ui/card";
 
 export default function ResetPasswordPage() {
   return (
-    <GuestOnlyRoute>
       <ResetPasswordContent />
-    </GuestOnlyRoute>
   );
 }
 

@@ -4,15 +4,27 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Mail } from "lucide-react";
 import { useState } from "react";
+import { useSubscribeToNewsletterMutation } from "@/lib/api/mailerliteApi";
+import { toast } from "sonner";
 
 export function CTASection() {
   const [email, setEmail] = useState("");
+  const [subscribeToNewsletter, { isLoading }] = useSubscribeToNewsletterMutation();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle newsletter signup
-    console.log("Newsletter signup:", email);
-    setEmail("");
+    
+    try {
+      const result = await subscribeToNewsletter({ email }).unwrap();
+      if (result.success) {
+        toast.success(result.message || "Successfully subscribed to newsletter!");
+        setEmail("");
+      } else {
+        toast.error(result.message || "Failed to subscribe to newsletter.");
+      }
+    } catch (error: any) {
+      toast.error(error?.data?.message || "An error occurred. Please try again.");
+    }
   };
 
   return (
@@ -45,8 +57,9 @@ export function CTASection() {
                 type="submit" 
                 size="lg" 
                 className="bg-white text-blue-600 hover:bg-white/90 px-8"
+                disabled={isLoading}
               >
-                Subscribe
+                {isLoading ? "Subscribing..." : "Subscribe"}
               </Button>
             </div>
           </form>

@@ -104,10 +104,10 @@ export function GoogleLoginButton() {
         toast.success('Google login successful!');
 
         // Route based on email verification status
-        if (result.bema_email_verified === false) {
+        if (result.bmh_email_verified === false) {
           router.push('/signup/verify');
         } else {
-          router.push('/dashboard');
+          router.push('/hub');
         }
       }
     } catch (error: any) {
@@ -187,10 +187,10 @@ export function FacebookLoginButton() {
                 toast.success('Facebook login successful!');
                 
                 // Route based on email verification status
-                if (result.bema_email_verified === false) {
+                if (result.bmh_email_verified === false) {
                   router.push('/signup/verify');
                 } else {
-                  router.push('/dashboard');
+                  router.push('/hub');
                 }
               }
             } catch (error: any) {
@@ -241,10 +241,10 @@ export function TwitterLoginButton() {
         toast.success('Twitter login successful!');
         
         // Route based on email verification status
-        if (result.bema_email_verified === false) {
+        if (result.bmh_email_verified === false) {
           router.push('/signup/verify');
         } else {
-          router.push('/dashboard');
+          router.push('/hub');
         }
       }
     } catch (error: any) {

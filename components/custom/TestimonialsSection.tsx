@@ -88,7 +88,7 @@ export function TestimonialsSection() {
   const visibleTestimonials = getCurrentTestimonials();
 
   return (
-    <section className="py-20 bg-muted/30">
+    <section id="testimonials" className="py-20 bg-muted/30">
       <div className="container px-4 sm:px-6 mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">Testimonials</h2>

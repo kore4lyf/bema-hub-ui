@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { Navbar } from "@/components/custom/Navbar";
 import { Footer } from "@/components/custom/Footer";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
+
 
 // Mock data for leaderboard
 const leaderboardData = [
@@ -118,9 +118,7 @@ const categoryData = [
 
 export default function LeaderboardPage() {
   return (
-    <ProtectedRoute>
       <LeaderboardContent />
-    </ProtectedRoute>
   );
 }
 

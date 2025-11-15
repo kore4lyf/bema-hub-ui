@@ -67,14 +67,14 @@ export default function Dashboard() {
   // Override the query to include token
   const getUserProfileWithToken = () => {
     if (!token) return Promise.reject('No token');
-    return fetch(`${BASE_URL}/wp-json/bema-hub/v1/profile`, {
+    return fetch(`${BASE_URL}/wp-json/bmh/v1/profile`, {
       headers: { 'Authorization': `Bearer ${token}` }
     }).then(res => res.json());
   };
 
   const updateProfileWithToken = (data: any) => {
     if (!token) return Promise.reject('No token');
-    return fetch(`${BASE_URL}/wp-json/bema-hub/v1/profile`, {
+    return fetch(`${BASE_URL}/wp-json/bmh/v1/profile`, {
       method: 'PUT',
       headers: { 
         'Authorization': `Bearer ${token}`,
@@ -86,7 +86,7 @@ export default function Dashboard() {
 
   const signoutWithToken = () => {
     if (!token) return Promise.reject('No token');
-    return fetch(`${BASE_URL}/wp-json/bema-hub/v1/auth/signout`, {
+    return fetch(`${BASE_URL}/wp-json/bmh/v1/auth/signout`, {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${token}` }
     }).then(res => res.json());
@@ -206,8 +206,8 @@ export default function Dashboard() {
     () => updateProfileWithToken({
       first_name: 'Updated',
       last_name: 'Name',
-      bema_country: 'Canada',
-      bema_state: 'Ontario'
+      bmh_country: 'Canada',
+      bmh_state: 'Ontario'
     }),
     'Update Profile'
   );
@@ -362,17 +362,17 @@ export default function Dashboard() {
                     </div>
                     
                     <div className="grid grid-cols-2 gap-3 text-sm">
-                      <div><strong>Country:</strong> {profile.bema_country}</div>
-                      <div><strong>State:</strong> {profile.bema_state}</div>
-                      <div><strong>Tier:</strong> {profile.bema_tier_level}</div>
-                      <div><strong>Account Type:</strong> {profile.bema_account_type}</div>
-                      <div><strong>Email Verified:</strong> {profile.bema_email_verified ? '✅' : '❌'}</div>
-                      <div><strong>Phone Verified:</strong> {profile.bema_phone_verified ? '✅' : '❌'}</div>
+                      <div><strong>Country:</strong> {profile.bmh_country}</div>
+                      <div><strong>State:</strong> {profile.bmh_state}</div>
+                      <div><strong>Tier:</strong> {profile.bmh_tier_level}</div>
+                      <div><strong>Account Type:</strong> {profile.bmh_account_type}</div>
+                      <div><strong>Email Verified:</strong> {profile.bmh_email_verified ? '✅' : '❌'}</div>
+                      <div><strong>Phone Verified:</strong> {profile.bmh_phone_verified ? '✅' : '❌'}</div>
                     </div>
                     
-                    {profile.bema_referred_by && (
+                    {profile.bmh_referred_by && (
                       <div className="bg-blue-50 p-3 rounded">
-                        <p className="text-sm"><strong>Referred by:</strong> {profile.bema_referred_by}</p>
+                        <p className="text-sm"><strong>Referred by:</strong> {profile.bmh_referred_by}</p>
                       </div>
                     )}
                   </div>

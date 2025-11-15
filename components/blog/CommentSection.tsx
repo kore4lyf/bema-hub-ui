@@ -195,7 +195,7 @@ function CommentForm({ postId, parentId, onSuccess, onCancel, placeholder = "Sha
             <span className="font-medium text-gray-900 dark:text-gray-100 text-sm">
               {user?.name || user?.email || 'User'}
             </span>
-            {user?.bema_email_verified && (
+            {user?.bmh_email_verified && (
               <Badge variant="secondary" className="text-xs px-2 py-0.5">
                 Verified
               </Badge>

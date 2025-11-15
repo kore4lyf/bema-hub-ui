@@ -8,14 +8,11 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 import { Eye, EyeOff, Loader2, Lock } from 'lucide-react'
-import GuestOnlyRoute from '@/components/auth/GuestOnlyRoute'
 import { Card } from '@/components/ui/card'
 
 export default function ResetPasswordWithOtpPage() {
   return (
-    <GuestOnlyRoute>
       <ResetPasswordWithOtpContent />
-    </GuestOnlyRoute>
   );
 }
 
@@ -31,6 +28,7 @@ function ResetPasswordWithOtpContent() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [passwordStrength, setPasswordStrength] = useState(0)
   const [errors, setErrors] = useState<{[key: string]: string}>({})
 
   useEffect(() => {
@@ -56,6 +54,20 @@ function ResetPasswordWithOtpContent() {
       return
     }
   }, [otp, router])
+
+  // Calculate password strength
+  useEffect(() => {
+    if (newPassword) {
+      let strength = 0;
+      if (newPassword.length >= 8) strength += 1;
+      if (/[A-Z]/.test(newPassword)) strength += 1;
+      if (/[0-9]/.test(newPassword)) strength += 1;
+      if (/[^A-Za-z0-9]/.test(newPassword)) strength += 1;
+      setPasswordStrength(strength);
+    } else {
+      setPasswordStrength(0);
+    }
+  }, [newPassword]);
 
   const verifyOtpCode = async (emailToUse: string) => {
     try {
@@ -114,10 +126,42 @@ function ResetPasswordWithOtpContent() {
       toast.success('Password reset successfully!')
       setTimeout(() => router.push('/signin'), 2000)
     } catch (error: any) {
+      // Remove the email from localStorage even on error to prevent reuse
+      localStorage.removeItem('resetPasswordEmail')
+      
       const errorMessage = error?.data?.message || 'Failed to reset password. The link may have expired.'
       toast.error(errorMessage)
     }
   }
+
+  // Password strength indicator component
+  const PasswordStrengthIndicator = () => {
+    if (!newPassword) return null;
+    
+    const strengthLabels = ["Very Weak", "Weak", "Medium", "Strong"];
+    const strengthColors = ["bg-red-500", "bg-orange-500", "bg-yellow-500", "bg-green-500"];
+    const strengthIndex = Math.min(passwordStrength, 3);
+    
+    return (
+      <div className="space-y-1">
+        <div className="flex h-1.5 gap-1">
+          {[1, 2, 3, 4].map((level) => (
+            <div
+              key={level}
+              className={`flex-1 rounded-full ${
+                level <= passwordStrength
+                  ? strengthColors[strengthIndex]
+                  : "bg-muted"
+              }`}
+            />
+          ))}
+        </div>
+        <p className="text-xs text-muted-foreground">
+          {strengthLabels[strengthIndex]}
+        </p>
+      </div>
+    );
+  };
 
   // Loading state while verifying OTP
   if (step === 'verifying') {
@@ -203,9 +247,9 @@ function ResetPasswordWithOtpContent() {
 
   // OTP verified, show password reset form
   return (
-    <div className="grid place-content-center px-4 py-12 [&::-webkit-scrollbar]:w-0 overflow-y-scroll">
-      <Card className="p-6">
-        <div className="w-full max-w-md space-y-8">
+    <div className=" grid place-content-center px-4 py-12 [&::-webkit-scrollbar]:w-0 overflow-y-scroll">
+      <Card className="p-6 max-w-md ">
+        <div className="w-full space-y-8">
           <div>
             <h1 className="text-3xl font-bold">Set new password</h1>
             <p className="mt-2 text-sm text-muted-foreground">
@@ -240,6 +284,7 @@ function ResetPasswordWithOtpContent() {
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </Button>
               </div>
+              <PasswordStrengthIndicator />
               {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
               <p className="text-xs text-muted-foreground">Password must be at least 8 characters long</p>
             </div>

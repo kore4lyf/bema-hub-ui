@@ -18,7 +18,6 @@ import { useSignupMutation } from "@/lib/api/authApi";
 import { setCredentials } from "@/lib/features/auth/authSlice";
 import { useGetCountriesQuery, useGetStatesMutation, useGetDialCodeMutation } from "@/lib/api/locationApi";
 import { GoogleLoginButton, FacebookLoginButton, TwitterLoginButton } from "@/components/auth/SocialLogin";
-import GuestOnlyRoute from "@/components/auth/GuestOnlyRoute";
 
 interface Country {
   name: string;
@@ -28,9 +27,7 @@ interface Country {
 
 export default function SignUpPage() {
   return (
-    <GuestOnlyRoute>
       <SignUpContent />
-    </GuestOnlyRoute>
   );
 }
 
@@ -143,7 +140,7 @@ function SignUpContent() {
     if (!formData.password) {
       newErrors.password = "Password is required";
     } else if (formData.password.length < 8) {
-      newErrors.password = "Password must be at least 8 characters";
+      newErrors.password = "Password must be at least 6 characters";
     }
     
     if (formData.password !== formData.confirmPassword) {
@@ -198,7 +195,7 @@ function SignUpContent() {
       // Store signup response data in Redux (redux-persist handles localStorage)
       dispatch(setCredentials({ authData: result }));
       
-      toast.success(result.message || "Registration successful! Please check your email for OTP.");
+      toast.success(result.message || "Account created successfully! Please check your email for verification code.");
       
       // Redirect to verify route
       router.push('/signup/verify');
@@ -384,6 +381,7 @@ function SignUpContent() {
                   type="tel"
                   placeholder="Enter your phone number"
                   value={formData.phoneNumber}
+                  maxLength={10}
                   onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
                   className="flex-1 border-l-0 rounded-l-none"
                 />

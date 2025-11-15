@@ -7,6 +7,34 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '2mb',
     },
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'bemahub.local',
+        port: '',
+        pathname: '/wp-content/uploads/**',
+      },
+      {
+        protocol: 'http',
+        hostname: 'bemahub.local',
+        port: '',
+        pathname: '/wp-content/uploads/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.bemahub.local',
+        port: '',
+        pathname: '/wp-content/uploads/**',
+      },
+      {
+        protocol: 'http',
+        hostname: 'www.bemahub.local',
+        port: '',
+        pathname: '/wp-content/uploads/**',
+      },
+    ],
+  },
 };
 
 export default nextConfig;

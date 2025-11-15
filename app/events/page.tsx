@@ -21,7 +21,7 @@ import {
   Mic
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
+
 
 const liveEvents = [
   {
@@ -31,12 +31,12 @@ const liveEvents = [
     date: "2025-10-26",
     time: "8:00 PM EST",
     location: "Live Stream",
+    registered: 1520,
     attendees: 1247,
     isLive: true,
     isUpcoming: false,
     category: "Live Performance",
     level: "All Members",
-    tags: ["Acoustic", "New Music", "Q&A"],
     image: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800&q=80"
   },
   {
@@ -46,12 +46,12 @@ const liveEvents = [
     date: "2025-11-02",
     time: "7:00 PM EST",
     location: "Private Stream",
+    registered: 52,
     attendees: 45,
     isLive: false,
     isUpcoming: true,
     category: "Community",
     level: "Ambassador Only",
-    tags: ["Ambassador", "Networking", "Exclusive"],
     image: "https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?w=800&q=80"
   },
   {
@@ -61,12 +61,12 @@ const liveEvents = [
     date: "2025-11-08",
     time: "6:00 PM EST",
     location: "Studio Live Stream",
+    registered: 950,
     attendees: 892,
     isLive: false,
     isUpcoming: true,
     category: "Studio Session",
     level: "Pro & Ambassador",
-    tags: ["Studio", "Creative Process", "Exclusive"],
     image: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=800&q=80"
   },
   {
@@ -76,12 +76,12 @@ const liveEvents = [
     date: "2025-11-15",
     time: "7:30 PM EST",
     location: "Community Stream",
+    registered: 280,
     attendees: 234,
     isLive: false,
     isUpcoming: true,
     category: "Community Showcase",
     level: "All Members",
-    tags: ["Fan Music", "Feedback", "Showcase"],
     image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&q=80"
   },
   {
@@ -91,12 +91,12 @@ const liveEvents = [
     date: "2025-11-22",
     time: "5:00 PM EST",
     location: "Welcome Stream",
+    registered: 180,
     attendees: 156,
     isLive: false,
     isUpcoming: false,
     category: "Education",
     level: "New Members",
-    tags: ["Onboarding", "Introduction", "Echo Loop"],
     image: "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800&q=80"
   }
 ];
@@ -112,9 +112,7 @@ const categories = [
 
 export default function EventsPage() {
   return (
-    <ProtectedRoute>
-      <EventsContent />
-    </ProtectedRoute>
+    <EventsContent />
   );
 }
 
@@ -123,12 +121,11 @@ function EventsContent() {
   const [selectedCategory, setSelectedCategory] = useState("All");
 
   const filteredEvents = liveEvents.filter(event => {
-    const matchesSearch = searchQuery === "" || 
-      event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      event.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      event.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
-    const matchesCategory = selectedCategory === "All" || event.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+  const matchesSearch = searchQuery === "" ||
+  event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  event.description.toLowerCase().includes(searchQuery.toLowerCase());
+  const matchesCategory = selectedCategory === "All" || event.category === selectedCategory;
+  return matchesSearch && matchesCategory;
   });
 
   return (
@@ -212,16 +209,14 @@ function EventsContent() {
                           </div>
                           <div className="flex items-center">
                             <Users className="mr-2 h-4 w-4 text-purple-600" />
-                            <span>{event.attendees} {event.isLive ? 'watching' : 'registered'}</span>
+                            <span>{event.registered} registered</span>
                           </div>
-                        </div>
-                        
-                        <div className="flex flex-wrap gap-1 mb-4">
-                          {event.tags.map((tag) => (
-                            <Badge key={tag} variant="outline" className="text-xs">
-                              {tag}
-                            </Badge>
-                          ))}
+                          {event.isLive && (
+                            <div className="flex items-center">
+                              <Play className="mr-2 h-4 w-4 text-purple-600" />
+                              <span>{event.attendees} watching now</span>
+                            </div>
+                          )}
                         </div>
                         
                         <div className="flex flex-wrap gap-2">
@@ -306,22 +301,6 @@ function EventsContent() {
                 </CardContent>
               </Card>
               
-              <Card className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Mic className="h-5 w-5" />
-                    Host Your Session
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-white/90 mb-4 text-sm">
-                    Echo Loop Ambassadors can host their own live sessions and engage directly with the community.
-                  </p>
-                  <Button className="w-full bg-white text-purple-600 hover:bg-white/90">
-                    Apply to Host
-                  </Button>
-                </CardContent>
-              </Card>
             </div>
           </div>
         </div>

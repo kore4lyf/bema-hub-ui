@@ -16,7 +16,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCreatePostMutation } from "@/lib/api/blogApi";
 import { useAppSelector } from "@/lib/hooks";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { Badge } from "@/components/ui/badge";
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "sonner";
@@ -33,9 +32,7 @@ interface FormData {
 
 export default function CreateBlogPage() {
   return (
-    <ProtectedRoute>
       <CreateBlogContent />
-    </ProtectedRoute>
   );
 }
 

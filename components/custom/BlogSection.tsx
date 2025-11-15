@@ -24,10 +24,10 @@ export function BlogSection() {
   ];
 
   return (
-    <section className="py-20 bg-muted/30">
+    <section id="latest" className="py-20 bg-muted/30">
       <div className="container px-4 sm:px-6 mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">Latest</h2>
+          <h2 className="text-4xl md:text-5xl font-bold mb-6">Updates</h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Insights, tips, and stories from our community
           </p>

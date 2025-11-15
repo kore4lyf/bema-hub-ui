@@ -28,7 +28,7 @@ interface WordPressEditorProps {
 
 export function WordPressEditor({ content, onChange, placeholder = "Start writing..." }: WordPressEditorProps) {
   const [isUploading, setIsUploading] = useState(false);
-  const token = useSelector((state: RootState) => state.auth.token);
+  const token = useSelector((state: RootState) => state.auth.accessToken);
 
   const uploadImage = async (file: File): Promise<string> => {
     const formData = new FormData();

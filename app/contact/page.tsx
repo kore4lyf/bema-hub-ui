@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Mail, MapPin, Phone, Clock, Send, Twitter, Instagram, Facebook, Youtube } from "lucide-react";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
+
 import { useState } from "react";
 import { useAppSelector } from "@/lib/hooks";
 
@@ -42,9 +42,7 @@ const contactInfo = [
 
 export default function ContactPage() {
   return (
-    <ProtectedRoute>
-      <ContactContent />
-    </ProtectedRoute>
+    <ContactContent />
   );
 }
 
@@ -200,7 +198,7 @@ function ContactContent() {
                 <div className="flex gap-4">
                   <Button variant="outline" size="icon">
                     <span className="sr-only">Twitter</span>
-                    <svg className="mr-2 h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
+                    <svg className="mr-2 h-4 w-4 mx-auto" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
                   </Button>
                   <Button variant="outline" size="icon">
                     <span className="sr-only">Instagram</span>

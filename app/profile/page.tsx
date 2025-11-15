@@ -17,22 +17,19 @@ import { useGetCountriesQuery, useGetStatesMutation } from "@/lib/api/locationAp
 import { useAuth } from "@/hooks/useAuth";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 interface ProfileFormData {
   first_name: string;
   last_name: string;
   display_name: string;
-  bema_phone_number: string;
-  bema_country: string;
-  bema_state: string;
+  bmh_phone_number: string;
+  bmh_country: string;
+  bmh_state: string;
 }
 
 export default function ProfilePage() {
   return (
-    <ProtectedRoute>
       <ProfileContent />
-    </ProtectedRoute>
   );
 }
 
@@ -53,9 +50,9 @@ function ProfileContent() {
     first_name: "",
     last_name: "",
     display_name: "",
-    bema_phone_number: "",
-    bema_country: "",
-    bema_state: "",
+    bmh_phone_number: "",
+    bmh_country: "",
+    bmh_state: "",
   });
 
   const [lastFetchedCountry, setLastFetchedCountry] = useState('');
@@ -63,11 +60,11 @@ function ProfileContent() {
 
   // Fetch states when country changes
   useEffect(() => {
-    if (formData.bema_country && formData.bema_country !== lastFetchedCountry) {
-      getStates(formData.bema_country);
-      setLastFetchedCountry(formData.bema_country);
+    if (formData.bmh_country && formData.bmh_country !== lastFetchedCountry) {
+      getStates(formData.bmh_country);
+      setLastFetchedCountry(formData.bmh_country);
     }
-  }, [formData.bema_country, getStates, lastFetchedCountry]);
+  }, [formData.bmh_country, getStates, lastFetchedCountry]);
 
   // Initialize form with profile data
   useEffect(() => {
@@ -76,9 +73,9 @@ function ProfileContent() {
         first_name: profile.first_name,
         last_name: profile.last_name,
         display_name: profile.display_name,
-        bema_phone_number: profile.bema_phone_number,
-        bema_country: profile.bema_country,
-        bema_state: profile.bema_state,
+        bmh_phone_number: profile.bmh_phone_number,
+        bmh_country: profile.bmh_country,
+        bmh_state: profile.bmh_state,
       });
     }
   }, [profile]);
@@ -95,9 +92,9 @@ function ProfileContent() {
         first_name: formData.first_name,
         last_name: formData.last_name,
         display_name: formData.display_name,
-        bema_phone_number: formData.bema_phone_number,
-        bema_country: formData.bema_country,
-        bema_state: formData.bema_state,
+        bmh_phone_number: formData.bmh_phone_number,
+        bmh_country: formData.bmh_country,
+        bmh_state: formData.bmh_state,
       }).unwrap();
 
       toast.success("Profile updated successfully!");
@@ -168,9 +165,9 @@ function ProfileContent() {
   }
 
   const initials = `${profile.first_name[0]}${profile.last_name[0]}`.toUpperCase();
-  const emailVerified = profile.bema_email_verified;
-  const phoneVerified = profile.bema_phone_verified;
-  const isFraud = profile.bema_fraud_flag;
+  const emailVerified = profile.bmh_email_verified;
+  const phoneVerified = profile.bmh_phone_verified;
+  const isFraud = profile.bmh_fraud_flag;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -223,7 +220,7 @@ function ProfileContent() {
                 <div className="space-y-2">
                   <div className="flex items-center">
                     <Award className="h-4 w-4 mr-2 text-muted-foreground" />
-                    <span className="text-sm">{profile.bema_tier_level}</span>
+                    <span className="text-sm">{profile.bmh_tier_level}</span>
                   </div>
                   <div className="flex items-center">
                     <Shield className="h-4 w-4 mr-2 text-muted-foreground" />
@@ -275,8 +272,8 @@ function ProfileContent() {
                     <Label htmlFor="phoneNumber">Phone Number</Label>
                     <Input
                       id="phoneNumber"
-                      value={formData.bema_phone_number}
-                      onChange={(e) => handleInputChange("bema_phone_number", e.target.value)}
+                      value={formData.bmh_phone_number}
+                      onChange={(e) => handleInputChange("bmh_phone_number", e.target.value)}
                     />
                   </div>
 
@@ -284,8 +281,8 @@ function ProfileContent() {
                     <div className="space-y-2">
                       <Label htmlFor="country">Country</Label>
                       <Select
-                        value={formData.bema_country}
-                        onValueChange={(value) => handleInputChange("bema_country", value)}
+                        value={formData.bmh_country}
+                        onValueChange={(value) => handleInputChange("bmh_country", value)}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select country" />
@@ -309,9 +306,9 @@ function ProfileContent() {
                     <div className="space-y-2">
                       <Label htmlFor="state">State</Label>
                       <Select
-                        value={formData.bema_state}
-                        onValueChange={(value) => handleInputChange("bema_state", value)}
-                        disabled={!formData.bema_country || isStatesLoading}
+                        value={formData.bmh_state}
+                        onValueChange={(value) => handleInputChange("bmh_state", value)}
+                        disabled={!formData.bmh_country || isStatesLoading}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder={isStatesLoading ? "Loading..." : "Select state"} />
@@ -369,8 +366,8 @@ function ProfileContent() {
                     <Label className="text-muted-foreground">Phone Number</Label>
                     <div className="flex items-center">
                       <Phone className="h-4 w-4 mr-2 text-muted-foreground" />
-                      <p className="font-medium">{profile.bema_phone_number || "Not provided"}</p>
-                      {profile.bema_phone_number && (
+                      <p className="font-medium">{profile.bmh_phone_number || "Not provided"}</p>
+                      {profile.bmh_phone_number && (
                         <Badge variant={phoneVerified ? "default" : "destructive"} className="ml-2">
                           {phoneVerified ? "Verified" : "Unverified"}
                         </Badge>
@@ -383,12 +380,12 @@ function ProfileContent() {
                       <Label className="text-muted-foreground">Country</Label>
                       <div className="flex items-center">
                         <Globe className="h-4 w-4 mr-2 text-muted-foreground" />
-                        <p className="font-medium">{profile.bema_country || "Not provided"}</p>
+                        <p className="font-medium">{profile.bmh_country || "Not provided"}</p>
                       </div>
                     </div>
                     <div className="space-y-2">
                       <Label className="text-muted-foreground">State</Label>
-                      <p className="font-medium">{profile.bema_state || "Not provided"}</p>
+                      <p className="font-medium">{profile.bmh_state || "Not provided"}</p>
                     </div>
                   </div>
 
@@ -397,14 +394,14 @@ function ProfileContent() {
                       <Label className="text-muted-foreground">Tier Level</Label>
                       <div className="flex items-center">
                         <Award className="h-4 w-4 mr-2 text-muted-foreground" />
-                        <p className="font-medium">{profile.bema_tier_level}</p>
+                        <p className="font-medium">{profile.bmh_tier_level}</p>
                       </div>
                     </div>
                     <div className="space-y-2">
                       <Label className="text-muted-foreground">Account Type</Label>
                       <div className="flex items-center">
                         <Shield className="h-4 w-4 mr-2 text-muted-foreground" />
-                        <p className="font-medium capitalize">{profile.bema_account_type}</p>
+                        <p className="font-medium capitalize">{profile.bmh_account_type}</p>
                       </div>
                     </div>
                   </div>
@@ -415,7 +412,7 @@ function ProfileContent() {
                       <div className="flex items-center">
                         <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
                         <p className="font-medium">
-                          {profile.bema_last_signin ? new Date(profile.bema_last_signin * 1000).toLocaleDateString() : "Not available"}
+                          {profile.bmh_last_signin ? new Date(profile.bmh_last_signin * 1000).toLocaleDateString() : "Not available"}
                         </p>
                       </div>
                     </div>
@@ -424,7 +421,7 @@ function ProfileContent() {
                       <div className="flex items-center">
                         <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
                         <p className="font-medium">
-                          {profile.bema_last_signout ? new Date(profile.bema_last_signout * 1000).toLocaleDateString() : "Not available"}
+                          {profile.bmh_last_signout ? new Date(profile.bmh_last_signout * 1000).toLocaleDateString() : "Not available"}
                         </p>
                       </div>
                     </div>
@@ -434,23 +431,23 @@ function ProfileContent() {
                     <Label className="text-muted-foreground">Referral Code</Label>
                     <div className="flex items-center">
                       <Hash className="h-4 w-4 mr-2 text-muted-foreground" />
-                      <p className="font-medium font-mono">{profile.bema_referred_by || "Not available"}</p>
+                      <p className="font-medium font-mono">{profile.bmh_referred_by || "Not available"}</p>
                     </div>
                   </div>
 
-                  {(profile.bema_google_id || profile.bema_facebook_id || profile.bema_twitter_id) && (
+                  {(profile.bmh_google_id || profile.bmh_facebook_id || profile.bmh_twitter_id) && (
                     <>
                       <Separator />
                       <div className="space-y-2">
                         <Label className="text-muted-foreground">Social Accounts</Label>
                         <div className="flex flex-wrap gap-2">
-                          {profile.bema_google_id && (
+                          {profile.bmh_google_id && (
                             <Badge variant="secondary">Google Connected</Badge>
                           )}
-                          {profile.bema_facebook_id && (
+                          {profile.bmh_facebook_id && (
                             <Badge variant="secondary">Facebook Connected</Badge>
                           )}
-                          {profile.bema_twitter_id && (
+                          {profile.bmh_twitter_id && (
                             <Badge variant="secondary">Twitter Connected</Badge>
                           )}
                         </div>

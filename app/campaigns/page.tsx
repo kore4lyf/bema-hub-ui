@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Users, Calendar, Music, Crown, Star, Search, Filter, Radio, Mic } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
+
 
 const campaigns = [
   {
@@ -84,9 +84,7 @@ const categories = ["All", "Music Release", "Live Performance", "Collaboration",
 
 export default function CampaignsPage() {
   return (
-    <ProtectedRoute>
       <CampaignsContent />
-    </ProtectedRoute>
   );
 }
 

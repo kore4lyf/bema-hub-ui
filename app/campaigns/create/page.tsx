@@ -11,7 +11,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar, Target, Users, Gift, Plus, X, Save, Send } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/custom/Navbar";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 interface Milestone {
   target: number;
@@ -21,9 +20,7 @@ interface Milestone {
 
 export default function CreateCampaignPage() {
   return (
-    <ProtectedRoute>
       <CreateCampaignContent />
-    </ProtectedRoute>
   );
 }
 

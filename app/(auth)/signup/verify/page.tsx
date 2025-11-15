@@ -6,11 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
-import { Loader2, Mail, CheckCircle, XCircle, RefreshCw, Shield } from "lucide-react";
+import { Loader2, RefreshCw, Shield } from "lucide-react";
 import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
 import { useVerifyOtpMutation, useResendOtpMutation } from "@/lib/api/authApi";
-import { setCredentials } from "@/lib/features/auth/authSlice";
+import { setCredentials, logout } from "@/lib/features/auth/authSlice";
 import { RootState } from "@/lib/store";
 
 export default function VerifyOTPPage() {
@@ -23,45 +23,30 @@ export default function VerifyOTPPage() {
   const [otpCode, setOtpCode] = useState(['', '', '', '', '', '']);
   const [resendTimer, setResendTimer] = useState(0);
   const [userEmail, setUserEmail] = useState('');
-  const [hasResentOnLoad, setHasResentOnLoad] = useState(false);
+  const [hasSentCode, setHasSentCode] = useState(false);
   
   const authState = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
-    // Get user data from Redux state (persisted automatically)
-    const email = authState.user?.email;
-    
-    if (!email) {
-      // If no email in state, check if user is authenticated
-      if (authState.isAuthenticated) {
-        // User is authenticated but no email in state - this shouldn't happen
-        toast.error("User data not found. Please sign in again.");
-        router.push('/signin');
-      } else {
-        // User is not authenticated at all
-        toast.error("Please sign up or sign in first.");
-        router.push('/signup');
-      }
-    } else {
-      setUserEmail(email);
+    // Case 1: User is authenticated and already verified - redirect to hub
+    if (authState.isAuthenticated && authState.user?.bmh_email_verified === true) {
+      router.push('/hub');
+      return;
     }
-  }, [authState.user, authState.isAuthenticated, router]);
-
-  // Check if user's email is already verified
-  useEffect(() => {
-    if (authState.isAuthenticated && authState.user?.bema_email_verified === true) {
-      // User is already verified, redirect to dashboard
-      router.push('/dashboard');
+    
+    // Case 2: User is authenticated but not verified - stay on page
+    if (authState.isAuthenticated && authState.user?.email) {
+      setUserEmail(authState.user.email);
+      return;
+    }
+    
+    // Case 3: User is not authenticated - redirect to signup
+    if (!authState.isAuthenticated) {
+      toast.error("Please sign up or sign in first.");
+      router.push('/signup');
+      return;
     }
   }, [authState.isAuthenticated, authState.user, router]);
-
-  // Resend OTP on page load
-  useEffect(() => {
-    if (userEmail && !hasResentOnLoad) {
-      handleResendOtpOnLoad();
-      setHasResentOnLoad(true);
-    }
-  }, [userEmail, hasResentOnLoad]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -96,22 +81,6 @@ export default function VerifyOTPPage() {
     }
   };
 
-  const handleResendOtpOnLoad = async () => {
-    try {
-      await resendOtp({ email: userEmail }).unwrap();
-      toast.success("Verification code sent to your email");
-      setResendTimer(60); // 60 second cooldown
-    } catch (err: any) {
-      // Handle rate limiting gracefully on page load
-      if (err.status === 429 || err.data?.code === 'otp_request_limit_exceeded') {
-        console.log("Rate limit reached on page load:", err.data?.message);
-        // Don't show error toast on page load for rate limiting
-      } else {
-        console.log("Failed to resend code on page load:", err);
-      }
-    }
-  };
-
   const handleOTPSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -133,17 +102,22 @@ export default function VerifyOTPPage() {
         otp_code: otpString
       }).unwrap();
 
-      // For verification success, redirect to dashboard
-      // The actual token will be provided during sign in
-      if (result.success) {
-        toast.success(result.message || "Email verified successfully!");
-        router.push("/dashboard");
-      } else {
-        toast.success("Email verified successfully! Please sign in.");
-        router.push("/signin");
+      toast.success(result.message || "Email verified successfully!");
+      if (authState.user) {
+        dispatch(setCredentials({
+          authData: {
+            ...authState.authData,
+            bmh_email_verified: true
+          }
+        }));
       }
+      router.push("/hub");
     } catch (err: any) {
       toast.error(err.data?.message || "OTP verification failed");
+      dispatch(logout());
+      localStorage.clear();
+      sessionStorage.clear();
+      router.push("/signup");
     }
   };
 
@@ -153,9 +127,9 @@ export default function VerifyOTPPage() {
     try {
       await resendOtp({ email: userEmail }).unwrap();
       toast.success("New verification code sent to your email");
-      setResendTimer(60); // 60 second cooldown
+      setResendTimer(60);
+      setHasSentCode(true);
     } catch (err: any) {
-      // Handle rate limiting (HTTP 429) with precise time formatting
       if (err.status === 429 || err.data?.code === 'otp_request_limit_exceeded') {
         toast.error(err.data?.message || "Too many requests. Please try again later.");
       } else {
@@ -164,7 +138,6 @@ export default function VerifyOTPPage() {
     }
   };
 
-  // Show loading state while checking auth and email
   if (!userEmail) {
     return (
       <div className="grid place-content-center px-4 py-12 overflow-y-scroll">
@@ -175,13 +148,12 @@ export default function VerifyOTPPage() {
     );
   }
 
-  // If user is already verified, redirect to dashboard
-  if (authState.user?.bema_email_verified === true) {
-    router.push("/dashboard");
+  if (authState.isAuthenticated && authState.user?.bmh_email_verified === true) {
     return (
       <div className="grid place-content-center px-4 py-12 overflow-y-scroll">
         <div className="flex items-center justify-center">
           <Loader2 className="h-8 w-8 animate-spin" />
+          <span className="ml-2">Redirecting to hub...</span>
         </div>
       </div>
     );
@@ -247,7 +219,7 @@ export default function VerifyOTPPage() {
             ) : resendTimer > 0 ? (
               <><RefreshCw className="h-4 w-4 mr-2" /> Resend in {resendTimer}s</>
             ) : (
-              <><RefreshCw className="h-4 w-4 mr-2" /> Resend code</>
+              <><RefreshCw className="h-4 w-4 mr-2" /> {hasSentCode ? "Resend code" : "Send code"}</>
             )}
           </Button>
         </CardFooter>

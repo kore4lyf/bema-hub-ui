@@ -20,9 +20,9 @@ export function SignoutButton({ variant = "outline", size = "default", className
 
   const handleSignout = async () => {
     try {
-      await signout().unwrap();
+      const result = await signout().unwrap();
       dispatch(signOut());
-      toast.success('Signed out successfully');
+      toast.success(result.message || 'Signed out successfully');
       router.push('/signin');
     } catch (err: any) {
       console.error('Signout failed:', err);

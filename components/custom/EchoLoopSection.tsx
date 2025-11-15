@@ -8,7 +8,7 @@ import Link from "next/link";
 
 export function EchoLoopSection() {
   return (
-    <section className="py-20">
+    <section id="ambassador" className="py-20">
       <div className="container px-4 sm:px-6 mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">

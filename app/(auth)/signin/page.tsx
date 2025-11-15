@@ -13,14 +13,11 @@ import { useDispatch } from "react-redux";
 import { useSigninMutation } from "@/lib/api/authApi";
 import { setCredentials } from "@/lib/features/auth/authSlice";
 import { GoogleLoginButton, FacebookLoginButton, TwitterLoginButton } from "@/components/auth/SocialLogin";
-import GuestOnlyRoute from "@/components/auth/GuestOnlyRoute";
 import { Card } from "@/components/ui/card";
 
 export default function SignInPage() {
   return (
-    <GuestOnlyRoute>
       <SignInContent />
-    </GuestOnlyRoute>
   );
 }
 
@@ -42,9 +39,6 @@ function SignInContent() {
         password: formData.password,
       }).unwrap();
 
-      console.log('Signin result:', result);
-      console.log('Email verified status:', result.bema_email_verified);
-
       dispatch(setCredentials({
         authData: result
       }));
@@ -52,12 +46,12 @@ function SignInContent() {
       toast.success("Signed in successfully!");
       
       // Route based on email verification status
-      if (result.bema_email_verified === false) {
+      if (result.bmh_email_verified === false) {
         console.log('Email not verified, redirecting to verify page');
         router.push("/signup/verify");
       } else {
-        console.log('Email verified, redirecting to dashboard');
-        router.push("/dashboard");
+        console.log('Email verified, redirecting to hub');
+        router.push("/hub");
       }
     } catch (err: any) {
       toast.error(err.data?.message || "Sign in failed");

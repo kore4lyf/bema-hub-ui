@@ -22,7 +22,6 @@ export function LiveSessionsSection() {
     isUpcoming: boolean;
     category: string;
     level: string;
-    tags: string[];
     image: string;
   }
 
@@ -39,7 +38,6 @@ export function LiveSessionsSection() {
       isUpcoming: false,
       category: "Live Performance",
       level: "All Members",
-      tags: ["Acoustic", "New Music", "Q&A"],
       image: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800&q=80"
     }
   ];
@@ -57,7 +55,6 @@ export function LiveSessionsSection() {
       isUpcoming: true,
       category: "Studio Session",
       level: "Pro & Ambassador",
-      tags: ["Studio", "Creative Process", "Exclusive"],
       image: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=800&q=80"
     },
     {
@@ -72,7 +69,6 @@ export function LiveSessionsSection() {
       isUpcoming: true,
       category: "Community Showcase",
       level: "All Members",
-      tags: ["Fan Music", "Feedback", "Showcase"],
       image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&q=80"
     }
   ];
@@ -90,7 +86,6 @@ export function LiveSessionsSection() {
       isUpcoming: false,
       category: "Workshop",
       level: "Pro & Ambassador",
-      tags: ["Collaboration", "Workshop", "Creative"],
       image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&q=80"
     },
     {
@@ -105,7 +100,6 @@ export function LiveSessionsSection() {
       isUpcoming: false,
       category: "Community",
       level: "All Members",
-      tags: ["Q&A", "Community", "Discussion"],
       image: "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800&q=80"
     },
     {
@@ -120,7 +114,6 @@ export function LiveSessionsSection() {
       isUpcoming: false,
       category: "Deep Dive",
       level: "All Members",
-      tags: ["Album", "Stories", "Behind the Scenes"],
       image: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=800&q=80"
     }
   ];
@@ -220,14 +213,6 @@ export function LiveSessionsSection() {
               </div>
             </div>
             
-            <div className="flex flex-wrap gap-1 mb-4">
-              {event.tags.map((tag: string, index: number) => (
-                <Badge key={index} variant="outline" className="text-xs">
-                  {tag}
-                </Badge>
-              ))}
-            </div>
-            
             <div className="flex flex-wrap gap-2">
               {event.isLive ? (
                 <Button className="bg-red-500 hover:bg-red-600 text-white">
@@ -256,7 +241,7 @@ export function LiveSessionsSection() {
   );
 
   return (
-    <section className="py-20 bg-slate-900 text-white relative overflow-hidden">
+    <section id="live" className="py-20 bg-slate-900 text-white relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-r from-blue-900/30 to-pink-900/20"></div>
       <div className="container px-4 sm:px-6 relative z-10 mx-auto">
         <div className="text-center mb-16">

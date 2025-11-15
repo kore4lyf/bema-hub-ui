@@ -13,7 +13,7 @@ export default function ApiStatus({ baseUrl }: ApiStatusProps) {
   const checkApiStatus = async () => {
     setStatus('checking');
     try {
-      const response = await fetch(`${baseUrl}/wp-json/bema-hub/v1/auth/validate`, {
+      const response = await fetch(`${baseUrl}/wp-json/bmh/v1/auth/validate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token: 'test' })

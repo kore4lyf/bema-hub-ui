@@ -10,10 +10,13 @@ import { Search, TrendingUp, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useState, useMemo } from "react";
 import { useGetPostsQuery, useGetCategoriesQuery } from "@/lib/api/blogApi";
+import { useSubscribeToNewsletterMutation } from "@/lib/api/mailerliteApi";
+import { toast } from "sonner";
 
 export default function BlogPage() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [subscribeToNewsletter, { isLoading: isSubscribing }] = useSubscribeToNewsletterMutation();
 
   const { data: categories = [] } = useGetCategoriesQuery();
 
@@ -369,8 +372,28 @@ export default function BlogPage() {
                   <p className="text-white/90 mb-4 text-sm">
                     Get exclusive updates, early access to campaigns, and behind-the-scenes content delivered straight to your inbox.
                   </p>
-                  <form className="space-y-3">
+                  <form 
+                    onSubmit={async (e) => {
+                      e.preventDefault();
+                      const formData = new FormData(e.target as HTMLFormElement);
+                      const email = formData.get('email') as string;
+                      
+                      try {
+                        const result = await subscribeToNewsletter({ email }).unwrap();
+                        if (result.success) {
+                          toast.success(result.message || "Successfully subscribed to newsletter!");
+                          (e.target as HTMLFormElement).reset();
+                        } else {
+                          toast.error(result.message || "Failed to subscribe to newsletter.");
+                        }
+                      } catch (error: any) {
+                        toast.error(error?.data?.message || "An error occurred. Please try again.");
+                      }
+                    }} 
+                    className="space-y-3"
+                  >
                     <Input
+                      name="email"
                       type="email"
                       placeholder="Enter your email"
                       className="bg-white/10 border-white/30 text-white placeholder:text-white/60 focus:border-white/50 text-sm"
@@ -379,8 +402,9 @@ export default function BlogPage() {
                     <Button 
                       type="submit" 
                       className="w-full bg-white text-purple-600 hover:bg-white/90 text-sm"
+                      disabled={isSubscribing}
                     >
-                      Subscribe
+                      {isSubscribing ? "Subscribing..." : "Subscribe"}
                     </Button>
                   </form>
                   <p className="text-xs text-white/70 mt-3 text-center">

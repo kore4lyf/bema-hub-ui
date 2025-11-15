@@ -39,7 +39,7 @@ export const authOptions: NextAuthOptions = {
         user: {} 
       }; 
     },
-    // Redirect to user dashboard page
+    // Redirect to user hub page
     async redirect({ url, baseUrl }) {
       // If the URL is our custom redirect, allow it.
       if (url.startsWith(`${baseUrl}/api/set-session-cookie`)) {

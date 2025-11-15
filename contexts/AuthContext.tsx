@@ -25,12 +25,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Hydrate auth state on mount
   useEffect(() => {
-    dispatch(hydrateAuth({ user: null, token: null, isAuthenticated: false, authData: null }));
+    dispatch(hydrateAuth({ user: null, accessToken: null, refreshToken: null, sessionId: null, sessions: [], isAuthenticated: false, authData: null }));
   }, [dispatch]);
 
   const value = {
     user: reduxAuth.user,
-    token: reduxAuth.token,
+    token: reduxAuth.accessToken,
     isAuthenticated: reduxAuth.isAuthenticated,
     isLoading: auth.isSigningIn || auth.isSigningUp || auth.isSocialLogin,
     signIn: auth.signIn,

@@ -11,21 +11,22 @@ interface ProtectedRouteProps {
 
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const router = useRouter();
-  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, user, sessionId } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
     // If user is not authenticated, redirect to signin
     if (!isAuthenticated) {
       router.push("/signin");
-      return;
     }
-
     // If user is authenticated but email is not verified, redirect to verify page
-    if (isAuthenticated && user?.bema_email_verified === false) {
+    else if (user?.bmh_email_verified === false) {
       router.push("/signup/verify");
-      return; // Add return to prevent further execution
     }
-  }, [isAuthenticated, user, router]);
+    // If user is authenticated but session is invalid, redirect to signin
+    else if (isAuthenticated && !sessionId) {
+      router.push("/signin");
+    }
+  }, [isAuthenticated, user?.bmh_email_verified, sessionId, router]);
 
   // Show loading state while checking auth
   if (!isAuthenticated) {
@@ -39,8 +40,8 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
     );
   }
 
-  // Show loading state while checking email verification
-  if (isAuthenticated && user?.bema_email_verified === false) {
+  // If user is authenticated but email is not verified, redirect to verify page
+  if (user?.bmh_email_verified === false) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
@@ -51,5 +52,6 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
     );
   }
 
+  // If user is authenticated and email is verified, render children
   return <>{children}</>;
 }

@@ -51,7 +51,13 @@ export const useAuth = () => {
         authData: result
       }));
       toast.success('Signed in successfully!');
-      router.push('/dashboard');
+      
+      // Route based on email verification status
+      if (result.bmh_email_verified === false) {
+        router.push('/signup/verify');
+      } else {
+        router.push('/hub');
+      }
       return result;
     } catch (error: any) {
       toast.error(error.data?.message || 'Sign in failed');
@@ -64,6 +70,7 @@ export const useAuth = () => {
       const result = await registerMutation(userData).unwrap();
       dispatch(setCredentials({ authData: result }));
       toast.success('Registration successful! Please check your email for OTP.');
+      router.push('/signup/verify');
       return result;
     } catch (error: any) {
       toast.error(error.data?.message || 'Registration failed');
@@ -77,11 +84,8 @@ export const useAuth = () => {
         email: data.email,
         otp_code: data.otpCode
       } as VerifyOtpRequest).unwrap();
-      dispatch(setCredentials({
-        authData: result
-      }));
       toast.success('Email verified successfully!');
-      router.push('/dashboard');
+      router.push('/signin');
       return result;
     } catch (error: any) {
       toast.error(error.data?.message || 'OTP verification failed');
@@ -96,7 +100,13 @@ export const useAuth = () => {
         authData: result
       }));
       toast.success('Social login successful!');
-      router.push('/dashboard');
+      
+      // Route based on email verification status
+      if (result.bmh_email_verified === false) {
+        router.push('/signup/verify');
+      } else {
+        router.push('/hub');
+      }
       return result;
     } catch (error: any) {
       toast.error(error.data?.message || 'Social login failed');

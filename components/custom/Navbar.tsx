@@ -12,7 +12,6 @@ import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { setTheme as setReduxTheme } from "@/lib/features/ui/uiSlice";
 import { signOut } from "@/lib/features/auth/authSlice";
 import Logo from "./Logo";
-import { motion } from "motion/react";
 
 export function Navbar() {
   const { theme, setTheme } = useTheme();
@@ -23,7 +22,7 @@ export function Navbar() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
-  const [indicatorStyle, setIndicatorStyle] = useState<{left: number, width: number} | null>(null);
+  const [indicatorStyle, setIndicatorStyle] = useState<{left: number, width: number} | null>({ left: 0, width: 0 });
   const navRefs = useRef<(HTMLAnchorElement | null)[]>([]);
   const navContainerRef = useRef<HTMLDivElement>(null);
 
@@ -135,6 +134,7 @@ export function Navbar() {
   };
 
   const navItems = [
+    { name: "Home", href: "/" },
     { name: "Blog", href: "/blog" },
     { name: "Events", href: "/events" },
     { name: "Campaigns", href: "/campaigns" },
@@ -149,7 +149,7 @@ export function Navbar() {
       <div className="container max-w-7xl flex h-16 items-center justify-between px-4 sm:px-6 mx-auto">
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-2">
-            <Logo size="75"/> 
+            <Logo theme={theme} /> 
           </Link>
         </div>
 
@@ -160,6 +160,9 @@ export function Navbar() {
                 (!isAuthenticated && !protectedNavRoutesName.includes(item.name)) || isAuthenticated
               )
               .map((item, index) => {
+                // Prevent Home from showing when user is authenticated
+                if (item.name === "Home" && isAuthenticated) return("");
+
                 // Check for exact match or subroute match
                 const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href + '/')) || pathname.startsWith(item.href + '?');
                 return (

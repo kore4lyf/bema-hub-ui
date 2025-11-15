@@ -8,8 +8,8 @@ export default function AuthRedirect() {
   const router = useRouter();
 
   useEffect(() => {
-    // Redirect to dashboard since user is already authenticated
-    router.push("/dashboard");
+    // Redirect to hub since user is already authenticated
+    router.push("/hub");
   }, [router]);
 
   return (

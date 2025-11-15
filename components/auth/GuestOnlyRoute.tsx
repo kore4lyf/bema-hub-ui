@@ -11,21 +11,21 @@ interface GuestOnlyRouteProps {
 }
 
 export default function GuestOnlyRoute({ children }: GuestOnlyRouteProps) {
-const router = useRouter();
-const pathname = usePathname();
+  const router = useRouter();
+  const pathname = usePathname();
   const authState = useSelector((state: RootState) => state.auth);
 
-useEffect(() => {
-// If user is authenticated and email is verified, redirect to dashboard
-// But allow access to verification page for partially authenticated users
-if (authState.isAuthenticated && authState.user?.bema_email_verified === true && pathname !== '/signup/verify') {
-router.push("/dashboard");
-return; // Add return to prevent further execution
-}
-  }, [authState.isAuthenticated, authState.user?.bema_email_verified, router, pathname]);
+  useEffect(() => {
+    // If user is authenticated and email is verified, redirect to hub
+    // But allow access to verification page for partially authenticated users
+    if (authState.isAuthenticated && authState.user?.bmh_email_verified === true && pathname !== '/signup/verify') {
+      router.push("/hub");
+      return; // Add return to prevent further execution
+    }
+  }, [authState.isAuthenticated, authState.user?.bmh_email_verified, router, pathname]);
 
   // Show loading state while checking auth
-  if (authState.isAuthenticated && authState.user?.bema_email_verified === true && pathname !== '/signup/verify') {
+  if (authState.isAuthenticated && authState.user?.bmh_email_verified === true && pathname !== '/signup/verify') {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
@@ -38,7 +38,7 @@ return; // Add return to prevent further execution
 
   // Show redirecting message for authenticated users with unverified email
   // But allow access to verification page
-  if (authState.isAuthenticated && authState.user?.bema_email_verified === false && pathname !== '/signup/verify') {
+  if (authState.isAuthenticated && authState.user?.bmh_email_verified === false && pathname !== '/signup/verify') {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">

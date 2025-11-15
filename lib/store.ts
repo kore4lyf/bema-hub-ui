@@ -6,6 +6,8 @@ import { authApi } from './api/authApi';
 import { locationApi } from './api/locationApi';
 import { bemaHubApi } from './api/bemaHubApi';
 import { blogApi } from './api/blogApi';
+import { mailerliteApi } from './api/mailerliteApi';
+import { siteApi } from './api/siteApi';
 
 const localStorageMiddleware: Middleware = (store) => (next) => (action: any) => {
   const result = next(action);
@@ -16,8 +18,8 @@ const localStorageMiddleware: Middleware = (store) => (next) => (action: any) =>
     
     // Also set a cookie for server-side middleware to check
     if (typeof window !== 'undefined') {
-      if (auth.isAuthenticated && auth.token) {
-        document.cookie = `auth-token=${auth.token}; path=/; max-age=86400`; // 24 hours
+      if (auth.isAuthenticated && auth.accessToken) {
+        document.cookie = `auth-token=${auth.accessToken}; path=/; max-age=86400`; // 24 hours
       } else {
         document.cookie = 'auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
       }
@@ -36,6 +38,8 @@ export const store = configureStore({
     [locationApi.reducerPath]: locationApi.reducer,
     [bemaHubApi.reducerPath]: bemaHubApi.reducer,
     [blogApi.reducerPath]: blogApi.reducer,
+    [mailerliteApi.reducerPath]: mailerliteApi.reducer,
+    [siteApi.reducerPath]: siteApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -43,7 +47,9 @@ export const store = configureStore({
       .concat(authApi.middleware)
       .concat(locationApi.middleware)
       .concat(bemaHubApi.middleware)
-      .concat(blogApi.middleware),
+      .concat(blogApi.middleware)
+      .concat(mailerliteApi.middleware)
+      .concat(siteApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

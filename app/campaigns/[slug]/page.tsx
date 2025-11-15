@@ -10,7 +10,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { Users, Calendar, Target, ArrowLeft, Share2, Heart, Trophy, CheckCircle2, Clock, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
+
 
 const updates = [
   {
@@ -92,9 +92,7 @@ const faqs = [
 
 export default function CampaignDetailPage({ params }: { params: { slug: string } }) {
   return (
-    <ProtectedRoute>
       <CampaignDetailContent params={params} />
-    </ProtectedRoute>
   );
 }
 

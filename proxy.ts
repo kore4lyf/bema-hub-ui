@@ -3,9 +3,15 @@ import type { NextRequest } from 'next/server';
 
 // Define which routes are protected (require authentication)
 const protectedRoutes = [
+  '/hub',
   '/dashboard',
   '/profile',
   '/campaigns',
+  '/leaderboard',
+  '/blog/create',
+  '/blog/edit',
+  '/blog/manage',
+  '/campaigns/create',
 ];
 
 // Define which routes are auth-only (accessible only when NOT authenticated)
@@ -18,6 +24,24 @@ const authOnlyRoutes = [
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
+  // Get auth data from cookies
+  const token = request.cookies.get('auth-token')?.value;
+  const isAuthenticated = !!token;
+  
+  // Handle root path - redirect based on auth status
+  if (pathname === '/') {
+    if (isAuthenticated) {
+      return NextResponse.redirect(new URL('/hub', request.url));
+    }
+    return NextResponse.next();
+  }
+  
+  // Special handling for /signup/verify
+  if (pathname.startsWith('/signup/verify')) {
+    // Allow access regardless of auth status - page will handle redirects
+    return NextResponse.next();
+  }
+  
   // Check if the route is protected
   const isProtectedRoute = protectedRoutes.some(route => 
     pathname.startsWith(route)
@@ -28,16 +52,9 @@ export function proxy(request: NextRequest) {
     pathname === route || pathname.startsWith(route)
   );
   
-  // Get the auth token from cookies
-  const token = request.cookies.get('auth-token')?.value;
-  const isAuthenticated = !!token;
-  
-  // For more precise control, we would need to decode the JWT token to check email verification status
-  // But for now, we'll modify the logic to be more specific about which signup routes to protect
-  
-  // Redirect authenticated users away from auth-only routes, but allow access to verification page
-  if (isAuthOnlyRoute && isAuthenticated && !pathname.startsWith('/signup/verify')) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+  // Redirect authenticated users away from auth-only routes
+  if (isAuthOnlyRoute && isAuthenticated) {
+    return NextResponse.redirect(new URL('/hub', request.url));
   }
   
   // Redirect unauthenticated users away from protected routes
@@ -48,19 +65,20 @@ export function proxy(request: NextRequest) {
   return NextResponse.next();
 }
 
-// Configure which paths the proxy should run on
 export const config = {
   matcher: [
+    '/',
+    '/hub/:path*',
     '/dashboard/:path*',
     '/profile/:path*',
-    '/events/:path*',
     '/campaigns/:path*',
     '/leaderboard/:path*',
     '/signin',
     '/signup/:path*',
     '/(auth)/reset-password/:path*',
     '/blog/create',
-    '/blog/edit',
+    '/blog/edit/:path*',
     '/blog/manage',
+    '/campaigns/create',
   ]
 };

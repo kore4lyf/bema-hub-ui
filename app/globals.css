@@ -168,4 +168,13 @@
     box-shadow: 0 0 0 2px #3b82f6;
     outline: none;
   }
+  
+  /* Site Logo Styles */
+  .site-logo {
+    max-height: 60px;
+  }
+
+  .themed-logo {
+    filter: brightness(0) invert(1); /* Converts to white */
+  }
 }
