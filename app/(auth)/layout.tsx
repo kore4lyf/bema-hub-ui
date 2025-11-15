@@ -21,7 +21,7 @@ export default function AuthLayout({
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/20" />
         <div className="flex justify-end absolute bottom-12 right-5 z-10 text-right text-white px-12">
           <Link href="/" className="text-4xl font-bold block mb-4">
-            <Logo theme="light" />
+            <Logo theme="dark"/>
           </Link>
         </div>
       </div>

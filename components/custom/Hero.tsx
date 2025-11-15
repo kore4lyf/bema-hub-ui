@@ -136,7 +136,7 @@ export function Hero() {
   };
 
   return (
-    <section className="relative min-h-screen overflow-hidden py-24 md:py-32 bg-background">
+    <section className="relative min-h-[calc(100vh-64px)] overflow-hidden py-24 md:py-32 bg-background">
       <div className="pointer-events-none absolute inset-0 z-10 h-full w-full bg-black/40" />
       
       {/* Render all backgrounds */}

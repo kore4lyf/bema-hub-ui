@@ -167,7 +167,7 @@ function ProfileContent() {
   const initials = `${profile.first_name[0]}${profile.last_name[0]}`.toUpperCase();
   const emailVerified = profile.bmh_email_verified;
   const phoneVerified = profile.bmh_phone_verified;
-  const isFraud = profile.bmh_fraud_flag;
+  const isFraud = profile.bmh_fraud_flag_count > 0;
 
   return (
     <div className="container mx-auto px-4 py-8">

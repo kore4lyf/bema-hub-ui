@@ -250,6 +250,7 @@ export interface ProfileResponse {
   bmh_across_campaign_badge_exp_date: string;
   bmh_referral_count: number;
   bmh_wallet_balance: number;
+  bmh_tier_level?: string;
   role: string;
 }
 
